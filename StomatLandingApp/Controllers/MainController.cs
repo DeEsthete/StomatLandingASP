@@ -10,8 +10,8 @@ namespace StomatLandingApp.Controllers
 {
     public class MainController : Controller
     {
-        private const string SENDER_EMAIL = "djoni-01@list.ru";
-        private const string SENDER_PASSWORD = "-";
+        private const string SENDER_EMAIL = "djoni-01@mail.ru";
+        private const string SENDER_PASSWORD = "Password";
         private const string RECIPIENT_EMAIL = "djoniqaz@gmail.com";
 
         // GET: Main
@@ -20,17 +20,21 @@ namespace StomatLandingApp.Controllers
             return View();
         }
 
-        public ActionResult SendData(string fullname, string email, string message)//text - название textarea
+        public ActionResult SendData(string fullname, string email, string message)
         {
-            SmtpClient Smtp = new SmtpClient("smtp.gmail.com ", 587);
-            Smtp.Credentials = new NetworkCredential(SENDER_EMAIL, SENDER_PASSWORD);
-            Smtp.EnableSsl = true;
-            MailMessage Message = new MailMessage();
-            Message.From = new MailAddress(SENDER_EMAIL);
-            Message.To.Add(new MailAddress(RECIPIENT_EMAIL));
-            Message.Subject = "Feedback";
-            Message.Body = "Name: " + fullname + " Email: " + email + "Message: " + message;
-            Smtp.Send(Message);
+            MailAddress from = new MailAddress(SENDER_EMAIL, fullname);
+            MailAddress to = new MailAddress(RECIPIENT_EMAIL);
+            MailMessage m = new MailMessage(from, to)
+            {
+                Subject = "Feedback",
+                Body = message
+            };
+            SmtpClient smpt = new SmtpClient("smtp.mail.ru", 25)
+            {
+                Credentials = new NetworkCredential(SENDER_EMAIL, SENDER_PASSWORD),
+                EnableSsl = true
+            };
+            smpt.Send(m);
             return View("Index");
         }
     }
